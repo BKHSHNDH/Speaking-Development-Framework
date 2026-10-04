@@ -83,7 +83,7 @@ a{color:inherit}
 .markdown hr{border:0;border-top:1px solid var(--line);margin:2rem 0}
 .markdown input[type=checkbox]{accent-color:var(--accent);transform:scale(1.1);margin-right:.45em}
 .floating-logo{
-  position:fixed;right:22px;bottom:22px;width:70px;height:70px;border-radius:50%;
+  position:fixed !important;right:22px !important;top:22px !important;bottom:auto !important;width:70px;height:70px;border-radius:50%;
   background:rgba(255,255,255,.92);border:1px solid rgba(29,91,69,.22);
   box-shadow:0 12px 35px rgba(23,35,29,.16);display:grid;place-items:center;z-index:20;
   color:var(--accent);font-weight:900;letter-spacing:-.08em;font-size:1.25rem;
@@ -102,7 +102,7 @@ a{color:inherit}
 }
 @media(max-width:560px){
   .app{padding:14px 10px 70px}.sidebar{grid-template-columns:1fr}.markdown{padding:28px 18px 55px}
-  .content-head{padding:15px 18px}.floating-logo{width:58px;height:58px;right:12px;bottom:12px}.top{left:12px;bottom:12px}
+  .content-head{padding:15px 18px}.floating-logo{width:58px;height:58px;right:12px !important;top:12px !important;bottom:auto !important}.top{left:12px;bottom:12px}
 }
 </style>
 </head>
