@@ -83,7 +83,7 @@ a{color:inherit}
 .markdown hr{border:0;border-top:1px solid var(--line);margin:2rem 0}
 .markdown input[type=checkbox]{accent-color:var(--accent);transform:scale(1.1);margin-right:.45em}
 .floating-logo{
-  position:fixed !important;right:22px !important;top:22px !important;bottom:auto !important;width:70px;height:70px;border-radius:50%;
+  position:fixed !important;inset:22px 22px auto auto !important;right:22px !important;top:22px !important;bottom:auto !important;left:auto !important;width:70px;height:70px;border-radius:50%;
   background:rgba(255,255,255,.92);border:1px solid rgba(29,91,69,.22);
   box-shadow:0 12px 35px rgba(23,35,29,.16);display:grid;place-items:center;z-index:20;
   color:var(--accent);font-weight:900;letter-spacing:-.08em;font-size:1.25rem;
@@ -102,7 +102,7 @@ a{color:inherit}
 }
 @media(max-width:560px){
   .app{padding:14px 10px 70px}.sidebar{grid-template-columns:1fr}.markdown{padding:28px 18px 55px}
-  .content-head{padding:15px 18px}.floating-logo{width:58px;height:58px;right:12px !important;top:12px !important;bottom:auto !important}.top{left:12px;bottom:12px}
+  .content-head{padding:15px 18px}.floating-logo{width:58px;height:58px;inset:12px 12px auto auto !important;right:12px !important;top:12px !important;bottom:auto !important;left:auto !important}.top{left:12px;bottom:12px}
 }
 </style>
 </head>
@@ -129,7 +129,7 @@ a{color:inherit}
   </div>
 </div>
 
-<div class="floating-logo" title="Mohammad Bakhshandeh"><span></span>MB</div>
+<div id="floatingLogo" class="floating-logo" title="Mohammad Bakhshandeh" style="position:fixed !important;inset:22px 22px auto auto !important;z-index:99999 !important;"><span></span>MB</div>
 <button class="top" title="Back to top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script>
@@ -141,7 +141,7 @@ const files = [
   {n:"05", title:"Compact Learner Works", path:"05.Compact Learner Works.md"}
 ];
 
-const ownerRepo = "BKHSHNDH/Speaking-Development-Framework";
+const logo=document.getElementById("floatingLogo"); if(logo){logo.style.setProperty("position","fixed","important");logo.style.setProperty("top","22px","important");logo.style.setProperty("right","22px","important");logo.style.setProperty("bottom","auto","important");logo.style.setProperty("left","auto","important");logo.style.setProperty("z-index","99999","important");}\n\nconst ownerRepo = "BKHSHNDH/Speaking-Development-Framework";
 const branch = "main";
 const rawBase = `https://raw.githubusercontent.com/${ownerRepo}/${branch}/`;
 
