@@ -68,6 +68,8 @@ a{color:inherit}
 .markdown h1,.markdown h2,.markdown h3{line-height:1.2;letter-spacing:-.025em;color:#14241b}
 .markdown .rtl{direction:rtl;text-align:right}
 .markdown .ltr{direction:ltr;text-align:left}
+.markdown .inline-rtl{direction:rtl;unicode-bidi:isolate}
+.markdown .inline-ltr{direction:ltr;unicode-bidi:isolate}
 .markdown .rtl blockquote,.markdown .rtl ul,.markdown .rtl ol{direction:rtl}
 .markdown .rtl table{direction:rtl}
 .markdown .ltr table{direction:ltr}
@@ -177,18 +179,47 @@ function applyTextDirection(root){
     if(el.closest("pre,code")) return;
     const text=el.textContent.trim();
     if(!text) return;
+
     const rtl=(text.match(/[\\u0590-\\u08FF]/g)||[]).length;
     const ltr=(text.match(/[A-Za-z]/g)||[]).length;
+    const direction=rtl>ltr ? "rtl" : "ltr";
+
     el.classList.remove("rtl","ltr");
-    if(rtl>ltr){
-      el.classList.add("rtl");
-      el.setAttribute("dir","rtl");
-    }else{
-      el.classList.add("ltr");
-      el.setAttribute("dir","ltr");
-    }
+    el.classList.add(direction);
+    el.setAttribute("dir",direction);
+
+    const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+
+    nodes.forEach(node=>{
+      if(!node.nodeValue.trim()) return;
+      if(node.parentElement.closest("code,pre")) return;
+
+      const value=node.nodeValue;
+      const firstRTL=value.search(/[\\u0590-\\u08FF]/);
+      const firstLTR=value.search(/[A-Za-z]/);
+      if(firstRTL>=0 && firstLTR>=0){
+        const frag=document.createDocumentFragment();
+        const re=/([\\u0590-\\u08FF]+|[A-Za-z]+(?:[’'’-][A-Za-z]+)*)/g;
+        let last=0, m;
+        while((m=re.exec(value))){
+          if(m.index>last) frag.appendChild(document.createTextNode(value.slice(last,m.index)));
+          const span=document.createElement("span");
+          span.textContent=m[0];
+          const isRTL=/[\\u0590-\\u08FF]/.test(m[0]);
+          span.dir=isRTL ? "rtl" : "ltr";
+          span.className=isRTL ? "inline-rtl" : "inline-ltr";
+          frag.appendChild(span);
+          last=re.lastIndex;
+        }
+        if(last<value.length) frag.appendChild(document.createTextNode(value.slice(last)));
+        node.parentNode.replaceChild(frag,node);
+      }
+    });
   });
 }
+
  
 function setActive(i){
   document.querySelectorAll(".file-btn").forEach((b,j)=>b.classList.toggle("active",j===i));
