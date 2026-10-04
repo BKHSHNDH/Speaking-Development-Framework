@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Speaking Development Framework — Turn input into ideas, ideas into speaking.">
+<title>Speaking Development Framework</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root{
+  --bg:#f4f7f3;
+  --surface:rgba(255,255,255,.88);
+  --surface-2:#eef3ee;
+  --text:#17231d;
+  --muted:#647169;
+  --line:#dbe4dd;
+  --accent:#1d5b45;
+  --accent-2:#2f7b5c;
+  --shadow:0 18px 55px rgba(23,35,29,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(47,123,92,.13), transparent 30rem),
+    radial-gradient(circle at 90% 15%, rgba(29,91,69,.08), transparent 28rem),
+    var(--bg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
+  line-height:1.72;
+}
+a{color:inherit}
+.app{max-width:1440px;margin:auto;padding:28px 22px 80px}
+.hero{
+  padding:54px 42px 42px;
+  border:1px solid rgba(255,255,255,.7);
+  border-radius:30px;
+  background:linear-gradient(135deg,rgba(255,255,255,.93),rgba(239,246,241,.88));
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(14px);
+}
+.eyebrow{letter-spacing:.16em;text-transform:uppercase;font-size:.76rem;color:var(--accent);font-weight:800}
+.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.08;margin:12px 0 12px;letter-spacing:-.045em}
+.hero p{max-width:850px;color:var(--muted);font-size:1.08rem;margin:0}
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:24px;margin-top:24px}
+.sidebar{
+  position:sticky;top:20px;height:max-content;
+  padding:16px;border:1px solid var(--line);border-radius:24px;
+  background:rgba(255,255,255,.82);box-shadow:0 10px 35px rgba(23,35,29,.07);
+}
+.sidebar-title{font-size:.75rem;font-weight:800;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;padding:8px 10px 12px}
+.file-btn{
+  width:100%;border:0;background:transparent;color:var(--text);
+  text-align:left;padding:13px 12px;border-radius:15px;cursor:pointer;
+  font:inherit;line-height:1.35;transition:.2s;
+}
+.file-btn:hover{background:var(--surface-2)}
+.file-btn.active{background:var(--accent);color:white;box-shadow:0 8px 22px rgba(29,91,69,.22)}
+.file-num{display:block;font-size:.7rem;opacity:.7;margin-bottom:4px;font-weight:800;letter-spacing:.08em}
+.content{
+  min-width:0;background:var(--surface);border:1px solid var(--line);
+  border-radius:28px;box-shadow:var(--shadow);overflow:hidden;
+}
+.content-head{padding:20px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.status{font-size:.8rem;color:var(--muted)}
+.markdown{padding:36px clamp(22px,5vw,64px) 70px;overflow-wrap:anywhere}
+.markdown h1,.markdown h2,.markdown h3{line-height:1.2;letter-spacing:-.025em;color:#14241b}
+.markdown h1{font-size:2.2rem;margin-top:.2rem}
+.markdown h2{font-size:1.65rem;margin-top:2.2rem}
+.markdown h3{font-size:1.25rem;margin-top:1.8rem}
+.markdown p,.markdown li{font-size:1rem}
+.markdown blockquote{
+  margin:1.4rem 0;padding:14px 20px;border-left:4px solid var(--accent);
+  background:#f0f5f1;border-radius:0 14px 14px 0;color:#294236
+}
+.markdown code{background:#edf2ee;padding:.16em .42em;border-radius:6px}
+.markdown pre{background:#17231d;color:#f2f6f3;padding:20px;border-radius:16px;overflow:auto;line-height:1.5}
+.markdown pre code{background:transparent;padding:0}
+.markdown table{width:100%;border-collapse:collapse;margin:1.5rem 0;display:block;overflow-x:auto}
+.markdown th,.markdown td{border:1px solid var(--line);padding:10px 12px;vertical-align:top}
+.markdown th{background:#edf3ee;text-align:left}
+.markdown hr{border:0;border-top:1px solid var(--line);margin:2rem 0}
+.markdown input[type=checkbox]{accent-color:var(--accent);transform:scale(1.1);margin-right:.45em}
+.floating-logo{
+  position:fixed;right:22px;bottom:22px;width:70px;height:70px;border-radius:50%;
+  background:rgba(255,255,255,.92);border:1px solid rgba(29,91,69,.22);
+  box-shadow:0 12px 35px rgba(23,35,29,.16);display:grid;place-items:center;z-index:20;
+  color:var(--accent);font-weight:900;letter-spacing:-.08em;font-size:1.25rem;
+}
+.floating-logo span{position:absolute;inset:4px;border:1px dashed rgba(29,91,69,.35);border-radius:50%;font-size:0}
+.top{
+  position:fixed;left:22px;bottom:22px;width:48px;height:48px;border:0;border-radius:50%;
+  background:var(--accent);color:#fff;cursor:pointer;font-size:1.2rem;box-shadow:0 10px 28px rgba(29,91,69,.25)
+}
+.error{padding:35px;color:#8b2f2f}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:auto;display:grid;grid-template-columns:1fr 1fr;gap:5px}
+  .sidebar-title{grid-column:1/-1}
+  .hero{padding:38px 25px}
+}
+@media(max-width:560px){
+  .app{padding:14px 10px 70px}.sidebar{grid-template-columns:1fr}.markdown{padding:28px 18px 55px}
+  .content-head{padding:15px 18px}.floating-logo{width:58px;height:58px;right:12px;bottom:12px}.top{left:12px;bottom:12px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="top">
+  <header class="hero">
+    <div class="eyebrow">Speaking Development Framework</div>
+    <h1>From Input to Ideas.<br>From Ideas to Speaking.</h1>
+    <p>A dedicated reading space for the complete framework and its learner / teacher worksheets — with the original Markdown content rendered directly from this repository.</p>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="nav">
+      <div class="sidebar-title">5 Learning Documents</div>
+    </aside>
+
+    <main class="content">
+      <div class="content-head">
+        <strong id="currentTitle">Loading…</strong>
+        <span class="status" id="status">Reading from GitHub</span>
+      </div>
+      <article class="markdown" id="content"></article>
+    </main>
+  </div>
+</div>
+
+<div class="floating-logo" title="Mohammad Bakhshandeh"><span></span>MB</div>
+<button class="top" title="Back to top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const files = [
+  {n:"01", title:"Complete Speaking Development Framework", path:"01.A Complete Speaking Development Framework.md"},
+  {n:"02", title:"From Input to Ideas", path:"02.FROM INPUT TO IDEAS.md"},
+  {n:"03", title:"Detailed Teacher-Guided Student Worksheet", path:"03.Detailed Teacher-Guided Student Worksheet.md"},
+  {n:"04", title:"Student Practice Worksheet", path:"04.Student Practice Worksheet.md"},
+  {n:"05", title:"Compact Learner Works", path:"05.Compact Learner Works.md"}
+];
+
+const ownerRepo = "BKHSHNDH/Speaking-Development-Framework";
+const branch = "main";
+const rawBase = `https://raw.githubusercontent.com/${ownerRepo}/${branch}/`;
+
+marked.setOptions({gfm:true,breaks:false});
+
+const nav = document.getElementById("nav");
+const content = document.getElementById("content");
+const currentTitle = document.getElementById("currentTitle");
+const status = document.getElementById("status");
+
+files.forEach((file,i)=>{
+  const b=document.createElement("button");
+  b.className="file-btn";
+  b.dataset.index=i;
+  b.innerHTML=`<span class="file-num">DOCUMENT ${file.n}</span>${file.title}`;
+  b.onclick=()=>loadFile(i,true);
+  nav.appendChild(b);
+});
+
+function setActive(i){
+  document.querySelectorAll(".file-btn").forEach((b,j)=>b.classList.toggle("active",j===i));
+}
+
+async function loadFile(i,updateHash){
+  const file=files[i];
+  setActive(i);
+  currentTitle.textContent=file.title;
+  status.textContent="Loading original Markdown…";
+  content.innerHTML="<p>Loading…</p>";
+  if(updateHash) history.replaceState(null,"",`#document-${i+1}`);
+  try{
+    const response=await fetch(rawBase + encodeURIComponent(file.path));
+    if(!response.ok) throw new Error("HTTP "+response.status);
+    const md=await response.text();
+    content.innerHTML=marked.parse(md);
+    status.textContent="Original repository content";
+    window.scrollTo({top:document.querySelector(".content").offsetTop-18,behavior:"smooth"});
+  }catch(err){
+    content.innerHTML=`<div class="error"><strong>Could not load this document.</strong><br>Please check the GitHub Pages connection or repository branch.<br><small>${err.message}</small></div>`;
+    status.textContent="Load error";
+  }
+}
+
+const hashMatch=location.hash.match(/document-(\\d+)/);
+const initial=hashMatch ? Math.min(Math.max(Number(hashMatch[1])-1,0),files.length-1) : 0;
+loadFile(initial,false);
+</script>
+</body>
+</html>
