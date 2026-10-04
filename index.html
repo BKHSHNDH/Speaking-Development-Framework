@@ -66,6 +66,14 @@ a{color:inherit}
 .status{font-size:.8rem;color:var(--muted)}
 .markdown{padding:36px clamp(22px,5vw,64px) 70px;overflow-wrap:anywhere}
 .markdown h1,.markdown h2,.markdown h3{line-height:1.2;letter-spacing:-.025em;color:#14241b}
+.markdown .rtl{direction:rtl;text-align:right}
+.markdown .ltr{direction:ltr;text-align:left}
+.markdown .rtl blockquote,.markdown .rtl ul,.markdown .rtl ol{direction:rtl}
+.markdown .rtl table{direction:rtl}
+.markdown .ltr table{direction:ltr}
+.markdown th.rtl,.markdown td.rtl{text-align:right}
+.markdown th.ltr,.markdown td.ltr{text-align:left}
+.markdown code,.markdown pre,.markdown kbd,.markdown samp{direction:ltr;text-align:left}
 .markdown h1{font-size:2.2rem;margin-top:.2rem}
 .markdown h2{font-size:1.65rem;margin-top:2.2rem}
 .markdown h3{font-size:1.25rem;margin-top:1.8rem}
@@ -163,6 +171,25 @@ files.forEach((file,i)=>{
   nav.appendChild(b);
 });
 
+function applyTextDirection(root){
+  const blocks=root.querySelectorAll("h1,h2,h3,h4,h5,h6,p,li,blockquote,th,td");
+  blocks.forEach(el=>{
+    if(el.closest("pre,code")) return;
+    const text=el.textContent.trim();
+    if(!text) return;
+    const rtl=(text.match(/[\\u0590-\\u08FF]/g)||[]).length;
+    const ltr=(text.match(/[A-Za-z]/g)||[]).length;
+    el.classList.remove("rtl","ltr");
+    if(rtl>ltr){
+      el.classList.add("rtl");
+      el.setAttribute("dir","rtl");
+    }else{
+      el.classList.add("ltr");
+      el.setAttribute("dir","ltr");
+    }
+  });
+}
+ 
 function setActive(i){
   document.querySelectorAll(".file-btn").forEach((b,j)=>b.classList.toggle("active",j===i));
 }
@@ -179,6 +206,7 @@ async function loadFile(i,updateHash){
     if(!response.ok) throw new Error("HTTP "+response.status);
     const md=await response.text();
     content.innerHTML=marked.parse(md);
+    applyTextDirection(content);
     status.textContent="Original repository content";
     window.scrollTo({top:document.querySelector(".content").offsetTop-18,behavior:"smooth"});
   }catch(err){
